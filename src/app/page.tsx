@@ -1,9 +1,11 @@
 import Intro from '@/components/Intro'
+import ProjectList from '@/components/ProjectList'
 
 export default function Home() {
   return (
-    <main className="min-h-[500vh] bg-black relative">
+    <main className="bg-black relative">
       <Intro />
+      <ProjectList />
     </main>
   )
 }

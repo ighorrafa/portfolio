@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react'
 
 type AnimatedTextProps = {
     text: string | string[];
@@ -24,12 +25,20 @@ export default function AnimatedText({
     className,
 }: AnimatedTextProps) {
     const textArray = Array.isArray(text) ? text : [text];
+    const ref = useRef(null);
+    const isInView = useInView(ref, { amount: 1 })
 
     return (
         <Wrapper className={className}>
             {/* Elemento para acessibilidade */}
             <span className="sr-only">{text}</span>
-            <motion.span aria-hidden initial="hidden" animate="visible" transition={{ staggerChildren: 0.07 }}>
+            <motion.span
+                ref={ref}
+                aria-hidden
+                initial="hidden"
+                animate={isInView ? "visible" : "hidden"}
+                transition={{ staggerChildren: 0.07 }}
+            >
                 {textArray.map((line, lineIndex) => (
                     <span className="block" key={`line-${lineIndex}`}>
                         {line.split(" ").map((word, wordIndex) => (
