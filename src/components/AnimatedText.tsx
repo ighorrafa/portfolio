@@ -1,10 +1,12 @@
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react'
+import { motion, useInView, useAnimation } from 'framer-motion';
+import { useRef, useEffect } from 'react';
 
 type AnimatedTextProps = {
     text: string | string[];
     el?: keyof JSX.IntrinsicElements;
     className?: string;
+    stagger?: number;
+    delay?: number;
 };
 
 // Objeto de animação padrão
@@ -23,10 +25,27 @@ export default function AnimatedText({
     text,
     el: Wrapper = "p",
     className,
+    stagger: time = 0.05,
+    delay = 0,
 }: AnimatedTextProps) {
     const textArray = Array.isArray(text) ? text : [text];
     const ref = useRef(null);
-    const isInView = useInView(ref, { amount: 1 })
+    const isInView = useInView(ref, { amount: 1 });
+    const controls = useAnimation();
+
+    useEffect(() => {
+        let timeout: NodeJS.Timeout;
+        const show = () => {
+            timeout = setTimeout(() => {
+                controls.start("visible");
+            }, delay * 1000);
+        }
+        if (isInView) {
+            show();
+        } else {
+            controls.start("hidden");
+        }
+    }, [isInView]);
 
     return (
         <Wrapper className={className}>
@@ -36,8 +55,8 @@ export default function AnimatedText({
                 ref={ref}
                 aria-hidden
                 initial="hidden"
-                animate={isInView ? "visible" : "hidden"}
-                transition={{ staggerChildren: 0.07 }}
+                animate={controls}
+                transition={{ staggerChildren: time }}
             >
                 {textArray.map((line, lineIndex) => (
                     <span className="block" key={`line-${lineIndex}`}>
